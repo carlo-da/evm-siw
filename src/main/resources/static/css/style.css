@@ -1,0 +1,59 @@
+/* =========================================
+   ROOT VARIABLES
+   ========================================= */
+:root {
+    /* Palette Colori */
+    --primary-dark: #65737e;    /* Colore scuro per Header/Footer */
+    --accent: #a23a40;   /* Colore accento */
+    --bg-light-gray: #f4f7f6;   /* Sfondo pagina */
+    --container-white: #ffffff; /* Sfondo del box centrale */
+    --text-dark: #333333;       /* Testo 1 */
+    --text-muted: #6c757d;      /* Testo 2 */
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.08); /* Ombra morbida per il container */
+    --border-radius: 12px;      /* Angoli arrotondati */
+}
+
+body {
+    background-color: var(--bg-light-gray);
+    color: var(--text-dark);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    margin: 0;
+}
+
+main {
+    flex: 1; 
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+a {
+    text-decoration: none;
+    color: var(--accent);
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: #a23a40; 
+}
+/* =========================================
+   HEADER & NAVIGATION
+   ========================================= */
+.main-header {
+    background: rgba(40, 45, 49, 0.9) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+.main-footer {
+    background: rgba(40, 45, 49, 0.9) !important;
+    border-top: 1px solid rgba(162, 58, 64, 0.2);
+    color: #ffffff !important;
+    font-weight: 500;
+}

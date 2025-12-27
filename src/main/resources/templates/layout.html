@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Event Manager</title>
+</head>
+
+<body>
+
+    <header th:fragment="header" class="main-header">
+        <nav class="navbar navbar-expand navbar-dark container">
+
+            <a class="navbar-brand d-flex align-items-center logo-animated" th:href="@{/}">
+                <img th:src="@{/images/eventmanager-logo.png}" alt="Logo" class="me-2" style="border-radius: 8px;">
+            </a>
+
+        </nav>
+    </header>
+
+    <footer th:fragment="footer" class="main-footer mt-auto py-3 bg-dark text-white-50 text-center">
+        <div class="container">
+            <small><strong>&copy; 2025 Event Manager</strong></small>
+        </div>
+    </footer>
+
+
+</body>
+
+</html>
