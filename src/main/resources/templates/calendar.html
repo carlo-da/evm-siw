@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="it" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Calendario Eventi')}"></head>
+
+<body>
+
+<header th:replace="~{layout :: header}"></header>
+
+<main class="container">
+    <div class="content-container">
+        <h2 class="page-title text-center mb-4">📅 Calendario Eventi</h2>
+        <div id='calendar'></div>
+    </div>
+</main>
+
+<footer th:replace="~{layout :: footer}"></footer>
+
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg" style="border-radius: 20px; border: none; overflow: hidden;">
+            
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="modalTitle" style="color: #a23a40; font-size: 1.5rem;">Titolo Evento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <img id="modalImage" src="" class="img-fluid rounded shadow-sm" 
+                         style="max-height: 250px; width: 100%; object-fit: cover; display: none; border: 1px solid #eee;">
+                </div>
+
+                <div class="p-3 rounded-4" style="background-color: #f8f9fa;">
+                    <div class="mb-2">
+                        <i class="bi bi-geo-alt-fill me-2" style="color: #3c2284;"></i> 
+                        <strong>Luogo:</strong> <span id="modalLocation" class="text-muted"></span>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-calendar-check-fill me-2" style="color: #a23a40;"></i>
+                        <strong>Inizio:</strong> <span id="modalStart" class="text-muted"></span>
+                    </div>
+                    <div class="mb-0">
+                        <i class="bi bi-calendar-x-fill me-2" style="color: #fd7e14;"></i>
+                        <strong>Fine:</strong> <span id="modalEnd" class="text-muted"></span>
+                    </div>
+                </div>
+                
+                <hr class="my-4 opacity-25">
+
+                <h6 class="fw-bold mb-2"><i class="bi bi-info-circle me-2"></i>Descrizione:</h6>
+                <p id="modalDescription" class="text-muted lh-base"></p>
+            </div>
+
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Chiudi</button>
+                <a th:href="@{/contacts}" class="btn text-white rounded-pill px-4 shadow-sm" 
+                   style="background-color: #fd7e14; border: none;">Iscriviti / Contatta</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{layout :: scripts}"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var modalElement = new bootstrap.Modal(document.getElementById('eventModal'));
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'it',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth'
+            },
+            displayEventTime: false,
+            // CONFIGURAZIONE VISIVA PER BOX MULTI-GIORNO
+            eventDisplay: 'block', // Trasforma l'evento in un box solido (come nel tuo screenshot desiderato)
+            
+            events: function(fetchInfo, successCallback, failureCallback) {
+                fetch('/api/events') // Rimosso filtri anno/mese se il backend restituisce già la lista
+                    .then(response => response.json())
+                    .then(data => {
+                        var events = data.map((e, index) => ({
+                            id: e.id,
+                            title: e.title,
+                            start: e.startDateTime, 
+                            end: e.endDateTime,
+                            // Assegnazione colori alternata in base al tema scelto
+                            backgroundColor: index % 2 === 0 ? '#a23a40' : '#3c2284',
+                            borderColor: index % 2 === 0 ? '#a23a40' : '#3c2284',
+                            extendedProps: {
+                                description: e.description,
+                                location: e.location,
+                                imageUrl: e.imageUrl // Assicurati che il backend passi questo campo
+                            }
+                        }));
+                        successCallback(events);
+                    })
+                    .catch(error => {
+                        console.error('Errore nel caricamento eventi:', error);
+                        failureCallback(error);
+                    });
+            },
+
+            // LOGICA PER IL MODALE CON IMMAGINE E BLUR
+            eventClick: function(info) {
+                // Titolo e Dati testuali
+                document.getElementById('modalTitle').innerText = info.event.title;
+                document.getElementById('modalDescription').innerText = info.event.extendedProps.description || 'Nessuna descrizione';
+                
+                // Date formattate
+                const opzioni = { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+                document.getElementById('modalStart').innerText = info.event.start.toLocaleString('it-IT', opzioni);
+                document.getElementById('modalEnd').innerText = info.event.end ? info.event.end.toLocaleString('it-IT', opzioni) : 'N/A';
+
+                // Gestione Locandina (Immagine)
+                const imgElement = document.getElementById('modalImage');
+                if (info.event.extendedProps.imageUrl) {
+                    imgElement.src = info.event.extendedProps.imageUrl;
+                    imgElement.style.display = 'block';
+                } else {
+                    imgElement.style.display = 'none'; // Nasconde se non c'è immagine
+                }
+
+                modalElement.show();
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
+</body>
+</html>
